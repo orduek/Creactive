@@ -3,7 +3,7 @@
     <title>CorsiBlock</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
  	  <script src="jspsych-4.3/jspsych.js"></script>
-  	<script src="jspsych-4.3/plugins/jspsych-text.js"></script>
+  	<script src="jspsych-4.3/plugins/jspsych-call-function.js"></script>
     <script src="jspsych-4.3/plugins/plugin-corsi.js"></script>
     <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
 </head>
@@ -14,18 +14,46 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 
 </body>
 <script>
+var forward = [[2,9],[6,3],[0,8,2],[7,1,6],[3,8,0,5],[9,5,1,6],[5,4,0,3,7],[4,6,8,7,1],[3,0,8,2,7,9],[8,1,5,6,2,4],[9,0,5,3,7,5,6],[1,5,2,7,1,9,0],[6,2,9,4,6,7,3,8],[5,8,2,1,0,6,9,4],[4,7,3,9,6,2,0,8,5],[7,1,5,0,9,2,6,3,8]];
 
-var block = {
+var backward = [[6,3],[2,9],[7,1,6],[0,8,2],[9,5,1,6],[3,8,0,5],[4,3,8,7,1],[5,4,0,3,7],[8,1,5,6,2,4],[3,0,8,2,7,9],[1,5,2,7,1,0,9],[9,0,5,3,7,4,6],[5,8,2,1,0,6,9,4],[6,2,9,4,6,7,3,8],[7,1,5,0,9,2,6,3,8],[4,7,3,9,6,2,0,8,5]];
+
+var block_forward = {
   type: 'plugin-corsi',
-  stimuli: [[1,2], [4,7,6],[6,8,2,1]],
-  //choices: ["a","b"],
+  stimuli: forward,
+  direction:"forward",
+  timing_response: 7000,
   
   };
-var exp=[];
 
-exp.push(block);
+var block_back = {
+  type: 'plugin-corsi',
+  stimuli: backward,
+  direction:"backward",
+  timing_response: 7000,
+}
+
+ var instructions = {
+   type: 'call-function',
+   func: function() {
+    alert("Now we do Backwards!")
+   }
+ }
+
+
+var chunk_for = {
+    chunk_type: 'linear',
+    timeline: [block_forward]
+    }
+
+var chunk_back = {
+  chunk_type: 'linear',
+  timeline: [block_back]
+}
+
+
 jsPsych.init({ 
-	experiment_structure: exp,
+	experiment_structure: [chunk_for, instructions, chunk_back],
 	on_finish: function() {
 		jsPsych.data.displayData();
     }

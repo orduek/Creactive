@@ -1,18 +1,26 @@
-
+/* 
+Corsi plugin. to use and operate corsi block.
+accepts sequences (in arrays). 
+direction ("forward" or "backward") - to set if user need to repeat same suqence or backwards.
+timing_response - how many second to wait from first click until moving to next step
+*/
   jsPsych['plugin-corsi'] = (function(){
 
     var plugin = {};
 
     plugin.create = function(params){
-      params = jsPsych.pluginAPI.enforceArray(params, ['stimuli']);
+      params = jsPsych.pluginAPI.enforceArray(params, ['stimuli','direction']);
       var trials = new Array (params.stimuli.length);
 
       for (i=0;i<trials.length;i++) {
         trials[i]={};
         trials[i].stimuli=params.stimuli[i];
+        trials[i].direction=params.direction;
         trials[i].choices = params.choices || [];
+        trials[i].timing_response = params.timing_response || -1; // if -1, then wait for response forever
         trials[i].response_ends_trial = (typeof params.response_ends_trial === 'undefined') ? true : params.response_ends_trial;
         console.log(trials[i]);
+        wrongCount=0; //counter for mistakes. if more than 3 in a raw - stops experiment.
         
         
       }
@@ -24,6 +32,9 @@
     plugin.trial = function(display_element, trial){
 
       trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
+      // var timeout to use when time elapsed more then needed.
+      var setTimeoutHandlers = [];
+     
 
       function Shape(x, y, w, h, fill) {
         this.x = x;
@@ -91,9 +102,12 @@
           delay1= delay1 + 1000;
           delay2= delay2 + 1000;
           change_color(rects[rectangle],delay1,delay2);
-          elem.removeEventListener('click',checkCol,false);
+          
           }
-        
+          // build a function that wil listento mouse clicks just after sequence was finished
+        setTimeout(function() {
+          elem.addEventListener('click', checkCol);
+        }, delay2);  
            
          return rectstr;
       }
@@ -125,7 +139,16 @@
             if (rect) {
                 change_c(rect);
                 responseSet.push(rect);
-                console.log(responseSet);
+                respCount=respCount+1;
+                // setting timer if pressed one time and waited
+                if (respCount>=1) {
+                  if (trial.timing_response > 0) {
+                    var t2 = setTimeout(function() {
+                      end_trial();
+                    }, trial.timing_response);
+                    setTimeoutHandlers.push(t2);
+                  }
+                }
                 if (responseSet.length>=trial.stimuli.length) {
                 end_trial();
               } else {
@@ -141,12 +164,12 @@
       //}
 
       function runBlock() {
-
-        responseSet=[];
-        rectstr = runTrial(trial.stimuli);
-        elem.addEventListener('click', checkCol);
         
-          
+        respCount=[]; // counter for responses
+        responseSet=[]; //check what was pressed
+        rectstr = runTrial(trial.stimuli);
+        
+              
         
     }
       
@@ -154,50 +177,46 @@
 
       var response = {rt: -1, key: -1};
 
-      var after_response = function(info) {
-
-        // after a valid response, the stimulus will have the CSS class 'responded'
-        // which can be used to provide visual feedback that a response was recorded
-        $("#jspsych-single-stim-stimulus").addClass('responded');
-
-        // only record the first response
-        if(response.key == -1){
-          response = info;
-        }
-
-        if (trial.response_ends_trial) {
-          end_trial();
-        }
-      };
-      
-        // var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
-        //   callback_function: after_response,
-        //   valid_responses: trial.choices,
-        //   rt_method: 'date',
-        //   persist: false,
-        //   allow_held_key: false
-        // });
-      //}
+     
       var end_trial = function() {
+
+        // kill any remaining setTimeout handlers
+        for (var i = 0; i < setTimeoutHandlers.length; i++) {
+          clearTimeout(setTimeoutHandlers[i]);
+        }
         // check if the sequence that was pressed is identical to the one that was presented
         
         rectCompare=[]
         // should put here an if statement if direction is backward the loop should be reversed
-        for (i=0;i<responseSet.length;i++) {
+        
+        if (trial.direction[0]=="forward") {
+          for (i=0;i<responseSet.length;i++) {
           rectCompare.push(rects[trial.stimuli[i]]);
-          
+        } 
+        } else if (trial.direction[0]=="backward") {
+          for (var i=(responseSet.length-1); i>=0; i--) {
+          rectCompare.push(rects[trial.stimuli[i]]);
+        } } else {
+          console.log("Not valid");
         }
         
-        console.log(rectCompare);
-        console.log(responseSet);
+        
+         
+        
         if (JSON.stringify(responseSet) === JSON.stringify(rectCompare)) {
           var correctAns=1;
+          wrongCount=0;
           console.log("Ok");
 
         } else {
           correctAns=0;
-
+          wrongCount++;
           console.log("mistake");
+          console.log(wrongCount);
+          if (wrongCount>=3) {  //setting how many mistakes before stopping exp.
+            console.log("Ending exp. too many mistaks");
+            jsPsych.endCurrentChunk();
+          }
         }
         elem.removeEventListener('click',checkCol,false);
 
@@ -205,13 +224,16 @@
         var trial_data = {
           "rt": response.rt,
           "stimulus": trial.stimuli,
+          "direction": trial.direction,
           "correctAns": correctAns,
         };
 
         jsPsych.data.write(trial_data);
         jsPsych.finishTrial();
       }
+      
       runBlock();
+      
       console.log(trial.stimuli);
       
     }
