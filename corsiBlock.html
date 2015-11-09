@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>CorsiBlock</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+ 	  <script src="jspsych-4.3/jspsych.js"></script>
+  	<script src="jspsych-4.3/plugins/jspsych-text.js"></script>
+    <script src="jspsych-4.3/plugins/plugin-corsi.js"></script>
+    <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+</head>
+ <body>
+  <canvas id="myCanvas" width="800" height="600" style="border:1px
+  solid #d3d3d3; position: absolute; left: 200px; top: 20px">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+</body>
+<script>
+
+var block = {
+  type: 'plugin-corsi',
+  stimuli: [[1,2], [4,7,6],[6,8,2,1]],
+  //choices: ["a","b"],
+  
+  };
+var exp=[];
+
+exp.push(block);
+jsPsych.init({ 
+	experiment_structure: exp,
+	on_finish: function() {
+		jsPsych.data.displayData();
+    }
+	 });
+	
+
+
+</script>
+
+
+</html>

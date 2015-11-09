@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="../jspsych.js"></script>
+    <script src="../plugins/jspsych-survey-likert.js"></script>
+    <script src="../plugins/jspsych-text.js"></script>
+    <link rel="stylesheet" href="css/jquery-ui.css"></link>
+    <link rel="stylesheet" href="../css/jspsych.css"></link>
+  </head>
+  <body>
+    <div id="jspsych-target"></div>
+  </body>
+  <script>
+
+  // defining groups of questions that will go together.
+  var welcome_block = {
+  type: "text",
+  text: "In the past one month, how much of a problem has your child had with:"
+};
+  //var page_1_title= ["In the past one month, how much of a problem has your child had with:"]
+  var page_1_questions = ["walking", "Running","participating in active play or exercise","lifting something heavy","bathing","Helping to pickup his or her toys","having hurts or aches","low energy level"];
+  var page_2_questions = ["I like fruit."];
+
+  // definiting two different response scales that can be used.
+  var scale_1 = ["never", "almost never", "somtimes", "often", "almost always"];
+  //var scale_2 = [""];
+  //var scale_3 = ["never", "almost never", "somtimes", "often", "almost always"];
+  //var scale_2 = ["Strongly Disagree", "Disagree", "Somewhat Disagree", "Neural", "Somewhat Agree", "Agree", "Strongly Agree"];
+
+  var likert_block = {
+   
+      type: 'survey-likert',
+      questions: [page_1_questions],
+      labels: [[scale_1,scale_1,scale_1,scale_1,scale_1,scale_1,scale_1,scale_1]], // need one scale for every question on a page
+      intervals: [[5,5,5,5,5,5,5,5]], // note the the intervals and labels don't necessarily need to match.
+  };
+  var experiment=[];
+  experiment.push(welcome_block);
+  experiment.push(likert_block);
+
+  jsPsych.init({
+    display_element: $('#jspsych-target'),
+    experiment_structure: experiment
+
+  });
+
+
+  </script>
+</html>
