@@ -1,8 +1,8 @@
 /**
- * jspsych-single-stim
- * Josh de Leeuw
+ * jspsych-corsi
+ * Or Duek
  *
- * plugin for displaying a stimulus and getting a keyboard response
+ * plugin for running the corsi block task in jspsych
  *
  * documentation: docs.jspsych.org
  *
@@ -50,9 +50,9 @@
 			        var left = rects[i].x, right = rects[i].x+rects[i].w;
 			        var top = rects[i].y, bottom = rects[i].y+rects[i].h;
 			        if (right >= x
-			            && left <= x
-			            && bottom >= y
-			            && top <= y) {
+			          && left <= x
+			          && bottom >= y
+			          && top <= y) {
 			            isCollision = rects[i];
 			        }
 			    }
@@ -88,7 +88,7 @@
 				  var myVar = setTimeout(function(){
 				  context.fillStyle="Black";
 				  context.fillRect(rect.x,rect.y,rect.w,rect.h);
-				}, 1000); 
+				}, 1000);
 				}
 			if (elem && elem.getContext) {
 			    // list of rectangles to render
@@ -126,7 +126,7 @@
 			    delay2= delay2 + 1000;
 			    change_color(rects[rectangle],delay1,delay2);
 			  }
-			  
+
 			   //return rectstr;
 			}
 
@@ -187,7 +187,7 @@
 		          change_c(rect);
 		          console.log(rect);
 		          response.push(rect);
-		          
+
 		          console.log('collision: ' + rect.x + '/' + rect.y);
 		      } else {
 		          console.log('no collision');

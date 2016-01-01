@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<!-- Dot comparison task
+
+
+until the age of 8 -> screen is divided to two parts. dots appears on each part
+separetly. Add some nice charectars to the game (which has more balls?)
+
+present 1-14 (5-20?) items per color on screen.
+
+
+waiting for spacebar before showing 250ms blank and then stimuli (for adults its 200ms of stimuli).
+between 5-16 dots for each color. In nature (2008) they used ratios of 1:2, 3:4, 5:6, 7:8. 10 trials for each ratio.
+they also did 10 practice trials.
+Two conditions (after ratio): 1. average dot size is equal. 2. comulative area is equal.
+
+average +-35%. 1degree is average dot size (app. 33pixels on a 1280X1024 screen 50cm)
+This means dot size ranges from 45-21px (but it surely can go down to 5pixels)
+
+Looking at the Panamath1.2 -> average dot size app. 30 deviation always 20. Base dot size = 36. between 5 to 20 dots (each color). 
+
+experiment should look like that:
+waiting for spacebar press -> 200ms blank screen -> Xms presentation of dots -> masking (100ms)-> wait for response (Blue or Yellow)
+DOT SIZE - base dot size is 36px. variance 20.
+-->
+
+<head>
+	<title>Dot Comparison Task</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+ 	<script src="jspsych-4.3/jspsych.js"></script>
+ 	<script src="jspsych-4.3/snap.svg-min.js"></script>
+ 	<script src="jspsych-4.3/random-0.26.js"</script>
+ 	
+  	<script src="jspsych-4.3/plugins/jspsych-call-function.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-dotcomparison.js"></script>
+
+    <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+
+</head>
+<body>
+
+<script>
+//function that will shuffle an array
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+//build array
+var ratios = new Array(40);  // can replace with number of trials (instead of 40)
+for (i=0;i<ratios.length;i++) {
+	if (i<10) {
+		ratios[i] = '1:2';
+		} else if (i>=10 && i<20) {
+			ratios[i] = '3:4';
+		} else if (i>=20 && i<30) {
+			ratios[i] = '5:6';
+
+		} else if (i>=30 && i<40) {
+			ratios[i] = '7:8'
+		}
+}
+var condition = new Array(40);
+for (i=0;i<condition.length;i++) {
+  if (i<condition.length/2) {
+    condition[i] = "area";
+  } else if (i>=condition.length/2) {
+    condition[i] = "average";
+  }
+}
+//ratios.push(Array.from(Array(10)).map(() => ['1:2','2:3']));
+//ratios.push()
+console.log(ratios);
+console.log(condition);
+//shuffling ratios and condition arrays
+shuffle(ratios);
+shuffle(condition);
+console.log(ratios);
+console.log(condition);
+
+var block_forward = {
+  type: 'dotComparison',
+  ratios: ratios,
+  condition:condition,
+  choices: [70,74]
+  //timing_response: 7000,
+  
+  };
+
+  jsPsych.init({ 
+	experiment_structure: [block_forward],
+	on_finish: function() {
+		jsPsych.data.displayData();
+    }
+	 });
+</script>
+</body>
+</html>
+
+
+
+
