@@ -27,19 +27,47 @@ DOT SIZE - base dot size is 36px. variance 20.
 <head>
 	<title>Dot Comparison Task</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
- 	<script src="jspsych-4.3/jspsych.js"></script>
- 	<script src="jspsych-4.3/snap.svg-min.js"></script>
- 	<script src="jspsych-4.3/random-0.26.js"</script>
+    <script src="jspsych-5.0.3/jspsych.js"></script>
+ 	<script src="snap.svg-min.js"></script>
+    <script src="GivitiExternalStorage/js/ExternalStorage.js"></script>
+    
+ 	<!-- <script src="random-0.26.js"</script> -->
  	
-  	<script src="jspsych-4.3/plugins/jspsych-call-function.js"></script>
-    <script src="jspsych-4.3/plugins/jspsych-dotcomparison.js"></script>
+  	<script src="jspsych-5.0.3/plugins/jspsych-call-function.js"></script>
+    <script src="jspsych-5.0.3/plugins/jspsych-dotcomparison.js"></script>
 
-    <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
-
+    <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+    <style>
+        .jspsych-display-element, html {
+            margin: auto;
+            height: 100%;
+        }
+        #myCanvas, svg {
+            border: 1px solid #d3d3d3;
+            margin-top: -300px;
+            position: relative;
+            top: 50%;
+            display: block;
+        }
+    </style>
 </head>
 <body>
 
 <script>
+
+var appName = "CREACTIVEAmbulatoryTasksDotComparison";
+var translationServiceURL = "https://givitiweb.marionegri.it/translations/Services/TranslationWebService.svc/";
+var dataStorageServiceURL = "http://episerver/givitiweb/Services/DataStorageWebService.svc/";
+var storage = new it.marionegri.givitiweb.ExternalStorage(translationServiceURL, dataStorageServiceURL);
+
+var promise = storage.loadTranslations("DotComparison Task", "en-US")
+promise.then(
+    function () {
+        console.log("Translations loaded!");
+        launchJSPsych();
+    }
+);
+
 //function that will shuffle an array
 function shuffle(array) {
   var currentIndex = array.length, temporaryValue, randomIndex ;
@@ -59,53 +87,47 @@ function shuffle(array) {
 
   return array;
 }
-//build array
-var ratios = new Array(40);  // can replace with number of trials (instead of 40)
-for (i=0;i<ratios.length;i++) {
-	if (i<10) {
-		ratios[i] = '1:2';
-		} else if (i>=10 && i<20) {
-			ratios[i] = '3:4';
-		} else if (i>=20 && i<30) {
-			ratios[i] = '5:6';
 
-		} else if (i>=30 && i<40) {
-			ratios[i] = '7:8'
-		}
+var stimuli = new Array();
+for (i = 0; i < 2; i++) {
+    var stimulusObject = {};
+    if (i<10) {
+		stimulusObject.ratio = '1:2';
+    } else if (i>=10 && i<20) {
+        stimulusObject.ratio = '3:4';
+    } else if (i>=20 && i<30) {
+        stimulusObject.ratio = '5:6';
+    } else if (i>=30 && i<40) {
+        stimulusObject.ratio = '7:8';
+    }
+    if ((i % 2) == 0) {
+        stimulusObject.condition = "area";
+    } else {
+        stimulusObject.condition = "average";
+    }
+    stimuli.push(stimulusObject)
 }
-var condition = new Array(40);
-for (i=0;i<condition.length;i++) {
-  if (i<condition.length/2) {
-    condition[i] = "area";
-  } else if (i>=condition.length/2) {
-    condition[i] = "average";
-  }
-}
-//ratios.push(Array.from(Array(10)).map(() => ['1:2','2:3']));
-//ratios.push()
-console.log(ratios);
-console.log(condition);
-//shuffling ratios and condition arrays
-shuffle(ratios);
-shuffle(condition);
-console.log(ratios);
-console.log(condition);
+
+shuffle(stimuli);
 
 var block_forward = {
   type: 'dotComparison',
-  ratios: ratios,
-  condition:condition,
+  timeline: stimuli,
   choices: [70,74]
   //timing_response: 7000,
   
   };
 
-  jsPsych.init({ 
-	experiment_structure: [block_forward],
-	on_finish: function() {
-		jsPsych.data.displayData();
+  function launchJSPsych() {
+      jsPsych.init({ 
+            timeline: [block_forward],
+            fullscreen: true,
+            on_finish: function() {
+                jsPsych.data.displayData();
+                storage.saveData(appName, jsPsych.data.getData());
+            }
+        });
     }
-	 });
 </script>
 </body>
 </html>

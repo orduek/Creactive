@@ -9,44 +9,27 @@
  **/
 
 (function($) {
-	jsPsych["dotComparison"] = (function() {
+	jsPsych.plugins["dotComparison"] = (function() {
 
 		var plugin = {};
 
-		plugin.create = function(params) {
-
-			params = jsPsych.pluginAPI.enforceArray(params, ['ratios'],['condition'],['choices']);
-			// noOftrials is the variable that takes numer of trial to be run (so the length of the task can be changed)
-			var trials = new Array(params.ratios.length);
-			for (var i = 0; i < ratios.length; i++) {
-				trials[i] = {};
-				// create the ratio trials
-				trials[i].ratio = params.ratios[i];
-				trials[i].condition = params.condition[i];
-				trials[i].choices = params.choices || [];
-				//trials[i].direction = params.direction || [];
-				trials[i].response_ends_trial = (typeof params.response_ends_trial === 'undefined') ? true : params.response_ends_trial;
-				// timing parameters
-				trials[i].timing_response = params.timing_response || -1; // if -1, then wait for response forever
-				// optional parameters
-				trials[i].is_html = (typeof params.is_html === 'undefined') ? false : params.is_html;
-				trials[i].prompt = (typeof params.prompt === 'undefined') ? "" : params.prompt;
-
-				// build list of the conditions per trial
-
-			}
-			return trials;
-		};
-
-
-
-		plugin.trial = function(display_element, trial) {
+		plugin.trial = function(display_element, params) {
 
 			// if any trial variables are functions
 			// this evaluates the function and replaces
 			// it with the output of the function
-			trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
+			params = jsPsych.pluginAPI.evaluateFunctionParameters(params);
 
+            var trial = {};
+            // create the ratio trials
+            trial.ratio = params.ratio;
+            trial.condition = params.condition;
+            trial.choices = params.choices || [];
+            trial.response_ends_trial = true;
+            // timing parameters
+            trial.timing_response = params.timing_response || -1; // if -1, then wait for response forever
+            
+            
 			// this array holds handlers from setTimeout calls
 			// that need to be cleared if the trial ends early
 			var setTimeoutHandlers = [];
@@ -163,9 +146,11 @@
 				'font-size': 50
 			});
 
-			setTimeout(function () {text.attr({
-				fill: "Gray"
-			})}, 1000);
+			setTimeout(function () {
+                text.attr({
+                    fill: "Gray"
+                });
+            }, 1000);
 			// should change this delay with wait for Keypress.
 
 			// begin creating circles
@@ -334,21 +319,38 @@
 
 				// adding end to runTrial() if not a callback function.
 				// removing dots from screen
-				setTimeout(function () {moreGroup.remove();},500);
-				setTimeout(function () {lessGroup.remove();},500);
-				// should add mask here.
+				setTimeout(function () {
+                    moreGroup.remove();
+                    lessGroup.remove();
+                    rect.attr ({
+                        fill: s.image("static/images/random_background.png",0,0,30,30).pattern(0,0,30,30)
+                    });
+                },500);
+				
+                // should add mask here.
 
 
 			}
 			
 			 setTimeout(runTrial,1250);
 			 function ask() {
-			 	var askWhich = s.text(200,350,"Which color has more dots? [f] Blue  [j] Yellow?")
-			 	askWhich.attr({
-				fill: "white",
-				'font-size': 20
-			});
+			 	var askWhich = s.text(200,350, storage.getTranslation("questionMoreDots")/*"Which color has more dots? [f] Blue  [j] Yellow?"*/); askWhich.attr({
+                    fill: "white",
+                    'font-size': 20
+                });
+                
+                var keyExplanation = s.text(200,380, storage.getTranslation("keyExplanation")/*"Which color has more dots? [f] Blue  [j] Yellow?"*/);
+                keyExplanation.attr({
+                    fill: "white",
+                    'font-size': 20
+                });
+                
+                rect.attr ({
+                    fill: "Gray"
+                });
+                setKeyboardListener();
 			 }
+             
 			 setTimeout(ask, 2500);
 				// store response
 					var response = {rt: -1, key: -1};
@@ -408,16 +410,19 @@
 						end_trial();
 					}
 				};
-				if(JSON.stringify(trial.choices) != JSON.stringify(["none"])) {
-					var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
-						callback_function: after_response,
-						valid_responses: trial.choices,
-						rt_method: 'date',
-						persist: false,
-						allow_held_key: false
-					});
-				}
-
+                
+                function setKeyboardListener () {
+                    if(JSON.stringify(trial.choices) != JSON.stringify(["none"])) {
+                        var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+                            callback_function: after_response,
+                            valid_responses: trial.choices,
+                            rt_method: 'date',
+                            persist: false,
+                            allow_held_key: false
+                        });
+                    }
+                }
+                    
 				// hide image if timing is set
 				if (trial.timing_stim > 0) {
 					var t1 = setTimeout(function() {
