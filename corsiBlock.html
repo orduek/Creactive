@@ -133,6 +133,7 @@ function launchJSPsych(fullscreen)  {
     jsPsych.init({ 
         timeline: [ instructions_block, corsiNodeForward, instructions, corsiNodeBackward ],
         fullscreen: fullscreen,
+        default_iti: 0,
         on_finish: function() {
             jsPsych.data.displayData();
             storage.saveData(appName, jsPsych.data.getData());

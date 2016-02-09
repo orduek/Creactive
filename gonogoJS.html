@@ -94,8 +94,7 @@
       var instructions_block = {
         type: "text",
         text: storage.getTranslation("goNoGoInstructions") + 
-          "<p>Age: " + age + "</p>" + languageSelect,
-        timing_post_trial: 2000
+          "<p>Age: " + age + "</p>" + languageSelect
       };
       
       /* define test block */
@@ -191,6 +190,7 @@
         timeline: timeline,
         show_progress_bar: true,
         fullscreen: fullscreen,
+        default_iti: 0,
         on_finish: function() {
             jsPsych.data.displayData();
             storage.saveData(appName, jsPsych.data.getData());
