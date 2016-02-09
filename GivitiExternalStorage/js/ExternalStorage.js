@@ -34,12 +34,13 @@ var it;
                         cache: false,
                         processData: false,
                     });
-                    $.when(promise, englishPromise).then(function (data, englishData) {
+                    var bothPromises = $.when(promise, englishPromise);
+                    bothPromises.then(function (data, englishData) {
                         _this.dictionary = {};
                         _this.dictionary[culture] = data[0]["d"];
                         _this.dictionary["en-US"] = englishData[0]["d"];
                     });
-                    return promise;
+                    return bothPromises;
                 };
                 ExternalStorage.prototype.getTranslation = function (key) {
                     if (this.dictionary == null || !(this.currentCulture in this.dictionary)) {

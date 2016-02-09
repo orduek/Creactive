@@ -12,6 +12,14 @@
     display: block;
 }
 
+#experimentDiv  {
+    margin-top: -300px;
+    position: relative;
+    top: 50%;
+    display: block;
+    height: 600px;
+}
+
 #goNoGoCanvas {
     margin-top: -300px;
     position: relative;

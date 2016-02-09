@@ -28,6 +28,7 @@ DOT SIZE - base dot size is 36px. variance 20.
 	<title>Dot Comparison Task</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="jspsych-5.0.3/jspsych.js"></script>
+    <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
  	<script src="snap.svg-min.js"></script>
     <script src="GivitiExternalStorage/js/ExternalStorage.js"></script>
     
@@ -49,13 +50,36 @@ var translationServiceURL = "https://givitiweb.marionegri.it/translations/Servic
 var dataStorageServiceURL = "http://episerver/givitiweb/Services/DataStorageWebService.svc/";
 var storage = new it.marionegri.givitiweb.ExternalStorage(translationServiceURL, dataStorageServiceURL);
 
-var promise = storage.loadTranslations("DotComparison Task", "en-US")
-promise.then(
-    function () {
-        console.log("Translations loaded!");
-        launchJSPsych();
-    }
-);
+function loadTranslations (culture) {
+    var promise = storage.loadTranslations("DotComparison Task", culture)
+    promise.then(
+        function () {
+            console.log("Translations loaded!");
+            if (Object.getOwnPropertyNames(jsPsych.currentTrial()).length > 0) {
+                jsPsych.endExperiment("");
+                launchJSPsych(false);
+            } else {
+                launchJSPsych(true);
+            }
+        }
+    );
+}
+var languages = it.marionegri.givitiweb.PageUtils.getListOfLanguages();
+if (languages == null || languages.length == 0) {
+    loadTranslations("en-US");
+} else {
+    loadTranslations(languages[0]);
+}
+
+function onChangeLanguage(sel) {
+    loadTranslations(sel.value);
+}
+
+var age = it.marionegri.givitiweb.PageUtils.getAge();
+if (age == null) {
+    age = prompt("What age are you?");
+}
+
 
 //function that will shuffle an array
 function shuffle(array) {
@@ -77,40 +101,61 @@ function shuffle(array) {
   return array;
 }
 
-var stimuli = new Array();
-for (i = 0; i < 40; i++) {
-    var stimulusObject = {};
-    if (i<10) {
-		stimulusObject.ratio = '1:2';
-    } else if (i>=10 && i<20) {
-        stimulusObject.ratio = '3:4';
-    } else if (i>=20 && i<30) {
-        stimulusObject.ratio = '5:6';
-    } else if (i>=30 && i<40) {
-        stimulusObject.ratio = '7:8';
-    }
-    if ((i % 2) == 0) {
-        stimulusObject.condition = "area";
-    } else {
-        stimulusObject.condition = "average";
-    }
-    stimuli.push(stimulusObject)
-}
 
-shuffle(stimuli);
+function launchJSPsych(fullscreen) {
+    var stimuli = new Array();
+    for (i = 0; i < 40; i++) {
+        var stimulusObject = {};
+        if (i<10) {
+            stimulusObject.ratio = '1:2';
+        } else if (i>=10 && i<20) {
+            stimulusObject.ratio = '3:4';
+        } else if (i>=20 && i<30) {
+            stimulusObject.ratio = '5:6';
+        } else if (i>=30 && i<40) {
+            stimulusObject.ratio = '7:8';
+        }
+        if ((i % 2) == 0) {
+            stimulusObject.condition = "area";
+        } else {
+            stimulusObject.condition = "average";
+        }
+        stimuli.push(stimulusObject)
+    }
 
-var block_forward = {
-  type: 'dotComparison',
-  timeline: stimuli,
-  choices: [70,74]
-  //timing_response: 7000,
+    shuffle(stimuli);
+
+    var block_forward = {
+          type: 'dotComparison',
+          timeline: stimuli,
+          choices: [70,74]
+          //timing_response: 7000,
+      
+      };
+      
+      var languages = it.marionegri.givitiweb.PageUtils.getListOfLanguages();
+      var languageSelect = "<select onchange='onChangeLanguage(this)'>";
+      for (var k in languages) {
+        if (storage.currentCulture == languages[k]) {
+            languageSelect += "<option value='" + languages[k] + "' selected>" + languages[k].substr(0, 2) + "</option>";
+        } else {
+            languageSelect += "<option value='" + languages[k] + "'>" + languages[k].substr(0, 2) + "</option>";
+        }
+      }
+      languageSelect += "</select>";
+      
+      /* define instructions block */
+      var instructions_block = {
+        type: "text",
+        text: "<div id='experimentDiv'>" + storage.getTranslation("dotComparisonInstructions") + 
+          "<p>Age: " + age + "</p>" + languageSelect + "</div>",
+        timing_post_trial: 2000
+      };
+
   
-  };
-
-  function launchJSPsych() {
       jsPsych.init({ 
-            timeline: [block_forward],
-            fullscreen: true,
+            timeline: [ instructions_block, block_forward],
+            fullscreen: fullscreen,
             on_finish: function() {
                 jsPsych.data.displayData();
                 storage.saveData(appName, jsPsych.data.getData());
