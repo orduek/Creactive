@@ -1,0 +1,64 @@
+
+.jspsych-display-element, html {
+    margin: auto;
+    height: 100%;
+}
+
+#myCanvas, svg {
+    border: 1px solid #d3d3d3;
+    margin-top: -300px;
+    position: relative;
+    top: 50%;
+    display: block;
+}
+
+#goNoGoCanvas {
+    margin-top: -300px;
+    position: relative;
+    top: 50%;
+    display: block;
+    height: 600px;
+}
+
+#goNoGoFixationPoint {
+    position: absolute;
+    top:300px;
+    left:400px;
+    width:200px;
+    height:25px;
+    font-size: 3em;
+}
+
+#readyPopup {
+    width: 300px;
+    height: 200px;
+    background-color: #F00;
+    color: #FFF;
+    font-weight: bold;
+    margin-top: -100px;
+    margin-left: -150px;
+    position: absolute;
+    padding: 30px;
+    top: 50%;
+    left: 50%;
+    display: block;
+}
+
+#jspsych-categorize-stimulus {
+    top: 170px;
+    position: relative;
+}
+
+.under {
+    position: absolute;
+    left: 100px;
+    top: 100px;
+    z-index: -1;
+}
+
+.over {
+    position: absolute;
+    left: 100px;
+    top: 100px;
+    z-index: -1;
+}

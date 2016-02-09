@@ -14,6 +14,7 @@ var it;
                 /** Load all translations contained inside a translationsManager block for a given culture */
                 ExternalStorage.prototype.loadTranslations = function (blockName, culture) {
                     var _this = this;
+                    this.currentCulture = culture;
                     var method = "GetLastKeysFromBlock";
                     var promise = $.ajax({
                         type: "GET",
@@ -24,18 +25,34 @@ var it;
                         cache: false,
                         processData: false,
                     });
-                    promise.then(function (data) {
-                        _this.dictionary = data["d"];
+                    var englishPromise = $.ajax({
+                        type: "GET",
+                        async: true,
+                        url: this.SERVICE_URL_TRANSLATIONS + method + "?applicationName=" + this.EXTERNAL_APPLICATION + "&blockName=" + blockName + "&culture=en-US",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        cache: false,
+                        processData: false,
+                    });
+                    $.when(promise, englishPromise).then(function (data, englishData) {
+                        _this.dictionary = {};
+                        _this.dictionary[culture] = data[0]["d"];
+                        _this.dictionary["en-US"] = englishData[0]["d"];
                     });
                     return promise;
                 };
                 ExternalStorage.prototype.getTranslation = function (key) {
-                    if (this.dictionary == null) {
+                    if (this.dictionary == null || !(this.currentCulture in this.dictionary)) {
                         return "";
                     }
-                    for (var element in this.dictionary) {
-                        if (this.dictionary[element]['Key'] == key) {
-                            return this.dictionary[element]['Value'];
+                    for (var element in this.dictionary[this.currentCulture]) {
+                        if (this.dictionary[this.currentCulture][element]['Key'] == key) {
+                            return this.dictionary[this.currentCulture][element]['Value'];
+                        }
+                    }
+                    for (var element in this.dictionary["en-US"]) {
+                        if (this.dictionary["en-US"][element]['Key'] == key) {
+                            return this.dictionary["en-US"][element]['Value'];
                         }
                     }
                     return key;
@@ -111,6 +128,22 @@ var it;
                 };
                 PageUtils.getAge = function () {
                     return PageUtils.getPageData(1);
+                };
+                PageUtils.getListOfLanguages = function () {
+                    var admissionKey = PageUtils.getPageData(0);
+                    var nationCode = admissionKey.substr(admissionKey.indexOf("-") + 1, 2);
+                    switch (nationCode) {
+                        case "IT":
+                            return ["it-IT", "en-US"];
+                        case "IL":
+                            return ["he-IL", "ar-IL", "en-US"];
+                        case "PL":
+                            return ["pl-PL", "en-US"];
+                        case "SI":
+                            return ["sl-SL", "en-US"];
+                        default:
+                            return ["en-US"];
+                    }
                 };
                 return PageUtils;
             })();
