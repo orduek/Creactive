@@ -507,7 +507,7 @@ var jsPsych = (function() {
         go();
       } else {
         DOM_target.append('<div style=""><p>The experiment will launch in fullscreen mode when you click the button below.</p><button id="jspsych-fullscreen-btn" class="jspsych-btn">Launch Experiment</button></div>');
-        $('#jspsych-fullscreen-btn').on('click', function() {
+        $('#jspsych-fullscreen-btn').on('click', function(e) {
           var element = document.documentElement;
           if (element.requestFullscreen) {
             element.requestFullscreen();
@@ -518,6 +518,7 @@ var jsPsych = (function() {
           } else if (element.msRequestFullscreen) {
             element.msRequestFullscreen();
           }
+          e.stopPropagation();
           $('#jspsych-fullscreen-btn').off('click');
           DOM_target.html('');
           go();

@@ -105,7 +105,8 @@ function launchJSPsych(fullscreen)  {
       var instructions_block = {
         type: "text",
         text: "<div id='experimentDiv'>" + storage.getTranslation("corsiInstructions") + "<p>" + languageSelect + "</p></div>",
-        timing_post_trial: 2000
+        timing_post_trial: 2000,
+        cont_key: "mouse"
       };
      
     var corsiNodeForward = {
