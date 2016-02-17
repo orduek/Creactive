@@ -57,6 +57,14 @@
     position: relative;
 }
 
+#nBackCanvas {
+    margin-top: -150px;
+    position: relative;
+    top: 50%;
+    display: block;
+    height: 600px;
+}
+
 .under {
     position: absolute;
     left: 100px;
