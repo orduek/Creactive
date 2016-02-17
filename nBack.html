@@ -10,7 +10,9 @@ block -->
   <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
   <script src="jspsych-5.0.3/plugins/jspsych-single-stim-mouse.js"></script>
   <script src="jspsych-5.0.3/plugins/jspsych-categorize.js"></script>
+  <script src="jspsych-5.0.3/plugins/jspsych-button-response.js"></script>
   <script src="GivitiExternalStorage/js/ExternalStorage.js"></script>
+
 
   <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
   <link href="creactive-tasks.css" rel="stylesheet" type="text/css"></link>
@@ -83,9 +85,9 @@ function shuffle(array) {
   return array;
 }
 
-function createTrials() {
-  var distractors = fillArray('distractor',17);
-  var targets = fillArray('target',10);
+function createTrials(target, distractor) {
+  var distractors = fillArray('distractor',distractor-3);
+  var targets = fillArray('target',target);
   var total = targets.concat(distractors); // using concat to concatenat two arrays.
 
   shuffle(total);
@@ -101,12 +103,12 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-var firstBlockCond = createTrials();
-var secondBlockCond = createTrials();
+var firstBlockCond = createTrials(10,20);
+var secondBlockCond = createTrials(10,20);
 
 
 
-function createObjectsToRun(n) {
+function createObjectsToRun(condBlock,n) {
   // create the first two objects
   var stimArray = [];
   var firstTwo = [];
@@ -125,9 +127,9 @@ function createObjectsToRun(n) {
   }
   stimArray.push({stimulus: test_stimuli[a], data: {condition: 'distractor'}});
   }
-  for (i=2;i<firstBlockCond.length;i++) {
+  for (i=2;i<condBlock.length;i++) {
     a = getRandomIntInclusive(0,9);
-    if (firstBlockCond[i] ==='distractor') {
+    if (condBlock[i] ==='distractor') {
          
       // create stimulus who is different than before
       if (test_stimuli[a] != stimArray[i-n].stimulus) {
@@ -156,37 +158,93 @@ function createObjectsToRun(n) {
  return stimArray   
 };
 
-var stimArrayOne = createObjectsToRun(1);
-var stimArrayTwo = createObjectsToRun(2);
-
+function endTrial(trial_data){
+    var correct;
+    if (trial_data.condition=='distractor') {
+    if (trial_data.key_press!= -1) {
+         correct = 0;
+         } 
+        else {
+        correct=1;
+        }   
+       } 
+    else {
+        if (trial_data.key_press!= -1) {
+         correct=1;
+        } 
+        else {
+          correct=0;
+          
+        }   
+       }
+    return correct;
+   };
+var stimArrayOne = createObjectsToRun(firstBlockCond, 1);
+var stimArrayTwo = createObjectsToRun(secondBlockCond, 2);
+var snd = new Audio("static/audio/woohoo2.wav"); // an audio file with woohooo sound
 var mistakeCounter = 0;
 var trial_data = jsPsych.data.getLastTrialData();
+
+// add practice block of ten with four targets
+var practiceCond = createTrials(4,6);
+var practiceOneArray = createObjectsToRun(practiceCond,1);
+
+var practice_block_one = {
+  type: 'single-stim-mouse',
+  timeline: practiceOneArray,
+  timing_response: 1500,
+  timing_post_trial: 2000,
+  usemouse: true,
+  data: {block: "practice"},
+  on_finish: function(trial_data) {
+    correct = endTrial(trial_data);
+    if (correct==1) {
+        snd.play()
+      }
+
+    }
+};
+
+var after_practice = {
+    type: 'button-response',
+    stimulus: "practice ended. Choose to repeat or continue",
+    choices: ['Repeat', 'Continue'],
+    is_html: true,
+    button_html: "<a class='jspsych-btn'>%choice%</a>"
+
+  };
+
+var practice_loop = {
+    timeline: [practice_block_one, after_practice],
+    loop_function: function(){
+        var data =  jsPsych.data.getLastTrialData()     
+        
+        if(data.button_pressed == 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+
 var block_one = {
   type: 'single-stim-mouse',
   usemouse: true,
   timeline: stimArrayOne,
   timing_response: 1500,
   data: {block: "one-back"},
-  on_finish: function(trial_data){
-    if (trial_data.condition=='distractor') {
-        if (trial_data.key_press!= -1) {
-         jsPsych.data.addDataToLastTrial({answer: 0});  
-         mistakeCounter++;
-         } 
-        else {
-        jsPsych.data.addDataToLastTrial({answer: 1});
-        }   
-       } 
+  on_finish: function(trial_data) {
+    correct = endTrial(trial_data);
+
+    if (correct==0) {
+      jsPsych.data.addDataToLastTrial({answer: 0});  
+      mistakeCounter++; }
     else {
-        if (trial_data.key_press!= -1) {
-          jsPsych.data.addDataToLastTrial({answer: 1});  
-        } 
-        else {
-          jsPsych.data.addDataToLastTrial({answer: 0});
-          mistakeCounter++;
-        }   
-       }
-   }
+      jsPsych.data.addDataToLastTrial({answer: 1});  
+      mistakeCounter= mistakeCounter; 
+    }
+  }
  };
 
 
@@ -196,24 +254,16 @@ var block_two = {
   timing_response: 1500,
   usemouse: true,
   data: {block: "two-back"},
-  on_finish: function(trial_data){
-    if (trial_data.condition=='distractor') {
-        if (trial_data.key_press!= -1) {
-         jsPsych.data.addDataToLastTrial({answer: 0});  
-         } 
-        else {
-        jsPsych.data.addDataToLastTrial({answer: 1});
-        }   
-       } 
+  on_finish: function(trial_data) {
+    correct = endTrial(trial_data);
+    if (correct==0) {
+      jsPsych.data.addDataToLastTrial({answer: 0});  
+      mistakeCounter++; }
     else {
-        if (trial_data.key_press!= -1) {
-          jsPsych.data.addDataToLastTrial({answer: 1});  
-        } 
-        else {
-          jsPsych.data.addDataToLastTrial({answer: 0});
-        }   
-       }
-   }
+      jsPsych.data.addDataToLastTrial({answer: 1});  
+      mistakeCounter=mistakeCounter; 
+    }
+  }
  };
 
 
@@ -240,7 +290,7 @@ var if_node = {
 # 30% of remaining (10) are targets.
 */
   jsPsych.init({
-        timeline: [inst_block,block_one, if_node],
+        timeline: [inst_block,practice_loop, block_one, if_node],
         show_progress_bar: true,
         fullscreen: true,
         default_iti: 500,
