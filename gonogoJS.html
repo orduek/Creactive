@@ -98,6 +98,13 @@
           "<p>Age: " + age + "</p>" + languageSelect
       };
       
+      var after_practice = {
+        type: "text",
+        cont_key: "mouse",
+        text: storage.getTranslation("afterPractice") + 
+          "<p>Age: " + age + "</p>" + languageSelect
+      };
+
       /* define test block */
       var test_stimuli = [{
         image: 'static/images/redapple.jpg',
@@ -114,8 +121,8 @@
       }];
       //----------------------------
 
-      var timeline = [instructions_block];
-      var practice_timeline =[];
+      var timeline = [];
+      var practice_timeline =[instructions_block];
 
       var fixation_trial = {
         type: 'single-stim',
@@ -179,7 +186,10 @@
           data: practice_trials.data[j],
           timing_response: maxTime,
         });
-      }
+      };
+
+      practice_timeline.push(after_practice);
+      timeline = practice_timeline.concat(timeline);
       
       /* calculate average RT in correct responses */
       function getAverageResponseTime() {
