@@ -101,8 +101,7 @@
       var after_practice = {
         type: "text",
         cont_key: "mouse",
-        text: storage.getTranslation("afterPractice") + 
-          "<p>Age: " + age + "</p>" + languageSelect
+        text: storage.getTranslation("afterPractice") 
       };
 
       /* define test block */
@@ -160,6 +159,7 @@
           stimulus: all_trials.image[i],
           key_answer: all_trials.answer[i],
           timing_stim: stimExp,
+          timing_feedback_duration: 500,
           usemouse: true,
           correct_text: "<div class='under'><img src='static/images/applebasket.png'></img><div class='over'><img src='static/images/redapple.jpg'></img>",
           show_stim_with_feedback: false,
@@ -178,6 +178,7 @@
           stimulus: practice_trials.image[j],
           key_answer: practice_trials.answer[j],
           timing_stim: stimExp,
+          timing_feedback_duration: 500,
           usemouse: true,
           correct_text: "<div class='under'><img src='static/images/applebasket.png'></img><div class='over'><img src='static/images/redapple.jpg'></img>",
           show_stim_with_feedback: false,
