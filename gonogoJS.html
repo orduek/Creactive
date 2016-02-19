@@ -7,7 +7,7 @@
   <script src="jspsych-5.0.3/jspsych.js"></script>
   <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
   <script src="jspsych-5.0.3/plugins/jspsych-single-stim.js"></script>
-  <script src="jspsych-5.0.3/plugins/jspsych-categorize.js"></script>
+  <script src="jspsych-5.0.3/plugins/jspsych-categorize-mouse.js"></script>
   <script src="GivitiExternalStorage/js/ExternalStorage.js"></script>
   
   <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
@@ -93,6 +93,7 @@
       /* define instructions block */
       var instructions_block = {
         type: "text",
+        cont_key: "mouse",
         text: storage.getTranslation("goNoGoInstructions") + 
           "<p>Age: " + age + "</p>" + languageSelect
       };
@@ -103,7 +104,7 @@
         data: {
           response: "go"
         },
-        answer: 32
+        answer: "mouse"
       }, {
         image: 'static/images/greenapple.jpg',
         data: {
@@ -114,11 +115,12 @@
       //----------------------------
 
       var timeline = [instructions_block];
+      var practice_timeline =[];
 
       var fixation_trial = {
         type: 'single-stim',
         stimulus: '<DIV id="goNoGoFixationPoint">+</DIV>',
-        timing_response: 1000, // how long to show the fixation for in ms
+        timing_response: 200, // how long to show the fixation for in ms
         response_ends_trial: false,
         choices: 'none', // no valid keys
         timing_post_trial: 0, // no gap between fixation and image
@@ -131,6 +133,7 @@
 
       if (age == 0) {
         var all_trials = jsPsych.randomization.repeat(test_stimuli, [2, 1], true);
+
       } else if (age < 5) {
         var all_trials = jsPsych.randomization.repeat(test_stimuli, [24, 8], true);
       } else if (5 >= age < 10) {
@@ -138,18 +141,19 @@
       } else {
         var all_trials = jsPsych.randomization.repeat(test_stimuli, [90, 30], true);
       }
-
-      console.log(stimExp);
-
+      // add practice trials
+      var practice_trials = jsPsych.randomization.repeat(test_stimuli, [10, 5], true);
+            
+      
       for (var i = 0; i < all_trials.image.length; i++) {
 
         timeline.push(fixation_trial);
         timeline.push({
-          type: "categorize",
+          type: "categorize-mouse",
           stimulus: all_trials.image[i],
           key_answer: all_trials.answer[i],
           timing_stim: stimExp,
-          choices: ['space'],
+          usemouse: true,
           correct_text: "<div class='under'><img src='static/images/applebasket.png'></img><div class='over'><img src='static/images/redapple.jpg'></img>",
           show_stim_with_feedback: false,
           incorrect_text: " ",
@@ -160,7 +164,23 @@
 
       };
 
-
+      for (var j=0;j<practice_trials.image.length;j++) {
+        practice_timeline.push(fixation_trial);
+        practice_timeline.push({
+          type: "categorize-mouse",
+          stimulus: practice_trials.image[j],
+          key_answer: practice_trials.answer[j],
+          timing_stim: stimExp,
+          usemouse: true,
+          correct_text: "<div class='under'><img src='static/images/applebasket.png'></img><div class='over'><img src='static/images/redapple.jpg'></img>",
+          show_stim_with_feedback: false,
+          incorrect_text: " ",
+          timeout_message: " ",
+          data: practice_trials.data[j],
+          timing_response: maxTime,
+        });
+      }
+      
       /* calculate average RT in correct responses */
       function getAverageResponseTime() {
 
@@ -184,8 +204,9 @@
             "any key to complete the experiment. Thank you!</p>";
         }
       };
-      timeline.push(debrief_block);
-      
+
+      //timeline.push(instructions_block,practice_timeline debrief_block);
+     
       jsPsych.init({
         timeline: timeline,
         show_progress_bar: true,

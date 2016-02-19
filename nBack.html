@@ -362,15 +362,6 @@ function launchJSPsych (fullscreen) {
           
   };
 
-  // # present stimulus for 1500ms
-  /*
-  # interstimulus interval of 1000ms
-
-  # two block loads (1-back, 2-back)
-  # 30 trials per block
-  # first three of each block are not targets
-  # 30% of remaining (10) are targets.
-  */
     jsPsych.init({
           timeline: [inst_block,practice_loop, block_one, if_node],
           show_progress_bar: true,
