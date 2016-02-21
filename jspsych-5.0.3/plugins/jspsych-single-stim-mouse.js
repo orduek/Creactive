@@ -13,7 +13,7 @@ jsPsych.plugins["single-stim-mouse"] = (function() {
 
   var plugin = {};
 
-  jsPsych.pluginAPI.registerPreload('single-stim', 'stimulus', 'image');
+  jsPsych.pluginAPI.registerPreload('single-stim-mouse', 'stimulus', 'image');
 
   plugin.trial = function(display_element, trial) {
 
