@@ -32,7 +32,7 @@
     var storage = new it.marionegri.givitiweb.ExternalStorage(translationServiceURL, dataStorageServiceURL);
 
     function loadTranslations (culture) {
-        var promise = storage.loadTranslations("antTask", culture)
+        var promise = storage.loadTranslations("Ant Task", culture)
         promise.then(
             function () {
                 console.log("Translations loaded!");
