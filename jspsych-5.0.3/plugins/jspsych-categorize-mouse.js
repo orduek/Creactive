@@ -135,6 +135,8 @@ jsPsych.plugins["categorize-mouse"] = (function() {
 
     function doFeedback(correct, timeout) {
 
+      document.removeEventListener("mousedown", mouse_listener);
+      
       if (timeout && !trial.show_feedback_on_timeout) {
         display_element.append(trial.timeout_message);
       } else {
