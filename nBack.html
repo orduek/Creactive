@@ -161,7 +161,7 @@ function launchJSPsych (fullscreen) {
       do {
         a= getRandomIntInclusive(0,9);
       }
-      while (test_stimuli[a]==stimArray.stimulus[0])
+      while (test_stimuli[a]==stimArray[0].stimulus)
     }
     stimArray.push({stimulus: test_stimuli[a], data: {condition: 'distractor'}});
     }
@@ -238,6 +238,9 @@ function launchJSPsych (fullscreen) {
       correct = endTrial(trial_data);
       if (correct==1) {
           snd.play()
+          document.getElementById("nBackCanvas").innerHTML = "<DIV id='nBackFeedBack'>&#10004</DIV>";
+          setTimeout(function() {document.getElementById("nBackCanvas").innerHTML= "";}, 300);
+
         }
 
       }
