@@ -458,7 +458,7 @@ function launchJSPsych (fullscreen) {
     choices: ['left','right'],
     on_finish: function(data) {
       // add feedback to answer
-      if(data.answer=="left") {
+      if(data.direction=="left") {
         if(data.button_pressed==0) {
           jsPsych.data.addDataToLastTrial({answer: 1});
           snd.play();
@@ -488,7 +488,7 @@ function launchJSPsych (fullscreen) {
     choices: ['left','right'],
     on_finish: function(data) {
       // add feedback to answer
-      if(data.answer=="left") {
+      if(data.direction=="left") {
         if(data.button_pressed==0) {
           jsPsych.data.addDataToLastTrial({answer: 1});
         } else {
