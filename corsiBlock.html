@@ -10,7 +10,7 @@
     <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     <link href="creactive-tasks.css" rel="stylesheet" type="text/css"></link>
 </head>
- <body> 
+ <body>
  </body>
 <script>
 
@@ -68,12 +68,13 @@ function createCorsiTimeline (arrayOfRectangles) {
 
 function launchJSPsych(fullscreen)  {
 
-     var instructions = {
-       type: 'call-function',
-       func: function() {
-        alert("Now we do Backwards!")
-       }
-     }
+    var instructions = {
+      type: "text",
+      text: storage.getTranslation("corsiInstructionsBack"),
+      timing_post_trial: 2000,
+      cont_key: "mouse"
+    };
+
 
     var checkIfMaxNumberOfWrongs = function (data) {
         console.log("OnFinish");
@@ -88,8 +89,8 @@ function launchJSPsych(fullscreen)  {
             wrongCount = 0;
         }
     }
-    
-    
+
+
       var languages = it.marionegri.givitiweb.PageUtils.getListOfLanguages();
       var languageSelect = "<select onchange='onChangeLanguage(this)'>";
       for (var k in languages) {
@@ -100,7 +101,7 @@ function launchJSPsych(fullscreen)  {
         }
       }
       languageSelect += "</select>";
-      
+
       /* define instructions block */
       var instructions_block = {
         type: "text",
@@ -108,7 +109,7 @@ function launchJSPsych(fullscreen)  {
         timing_post_trial: 2000,
         cont_key: "mouse"
       };
-     
+
     var corsiNodeForward = {
         type: 'plugin-corsi',
         timeline: createCorsiTimeline(forward),
@@ -131,7 +132,7 @@ function launchJSPsych(fullscreen)  {
         on_finish: checkIfMaxNumberOfWrongs
     }
 
-    jsPsych.init({ 
+    jsPsych.init({
         timeline: [ instructions_block, corsiNodeForward, instructions, corsiNodeBackward ],
         fullscreen: fullscreen,
         default_iti: 0,
