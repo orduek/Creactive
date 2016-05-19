@@ -48,7 +48,7 @@ var appName = "CREACTIVEAmbulatoryTasksNback";
     } else {
         loadTranslations(languages[0]);
     }
-    
+
     function onChangeLanguage(sel) {
         loadTranslations(sel.value);
     }
@@ -74,7 +74,7 @@ function launchJSPsych (fullscreen) {
   var picTen = 'static/images/porcupine.jpeg';
 
   // create an array of stimuli
-  var test_stimuli = [picOne,picTwo,picThree,picFour,picFive,picSix,picSeven,picEight,picNine,picTen]; 
+  var test_stimuli = [picOne,picTwo,picThree,picFour,picFive,picSix,picSeven,picEight,picNine,picTen];
 
   // put instructions and practive session
   var inst_block = {
@@ -82,9 +82,9 @@ function launchJSPsych (fullscreen) {
     text: storage.getTranslation("firstBlockInstructions"),
     cont_key: "mouse"
 
-    /*storage.getTranslation("nBackInstructions") + 
+    /*storage.getTranslation("nBackInstructions") +
             "<p>Age: " + age + "</p>" + languageSelect
-      */  
+      */
   };
   var inst_two = {
     type: "text",
@@ -132,7 +132,7 @@ function launchJSPsych (fullscreen) {
 
     total.unshift('distractor','distractor','distractor')  //adding three more distractors at beginning of block
 
-    // 
+    //
    return total;
   };
   // need to set array of pictures according to array of conditions.
@@ -154,9 +154,9 @@ function launchJSPsych (fullscreen) {
     stimArray.push({stimulus: test_stimuli[a], data: {condition:'distractor'}});
     firstTwo.push(test_stimuli[a]);
     for (i=0;i<1;i++) {
-    
+
     a=getRandomIntInclusive(0,9);
-    
+
     if (test_stimuli[a]==firstTwo[0]) {
       do {
         a= getRandomIntInclusive(0,9);
@@ -168,7 +168,7 @@ function launchJSPsych (fullscreen) {
     for (i=2;i<condBlock.length;i++) {
       a = getRandomIntInclusive(0,9);
       if (condBlock[i] ==='distractor') {
-           
+
         // create stimulus who is different than before
         if (test_stimuli[a] != stimArray[i-n].stimulus) {
           stimArray.push({stimulus: test_stimuli[a], data: {condition:'distractor'} });
@@ -180,20 +180,20 @@ function launchJSPsych (fullscreen) {
               a=getRandomIntInclusive(0,9);
          } else {
             stimArray.push({stimulus: test_stimuli[a], data: {condition:'distractor'} });
-            
-              }  
+
+              }
             }
-          } 
+          }
         }
-          
-     
+
+
       else {
         // create one that is the same as the 1/2 before
         stimArray.push({stimulus: stimArray[i-n].stimulus, data: {condition: 'target'}});
-        
+
       };
     };
-   return stimArray   
+   return stimArray
   };
 
   function endTrial(trial_data){
@@ -201,19 +201,19 @@ function launchJSPsych (fullscreen) {
       if (trial_data.condition=='distractor') {
       if (trial_data.key_press!= -1) {
            correct = 0;
-           } 
+           }
           else {
           correct=1;
-          }   
-         } 
+          }
+         }
       else {
           if (trial_data.key_press!= -1) {
            correct=1;
-          } 
+          }
           else {
             correct=0;
-            
-          }   
+
+          }
          }
       return correct;
      };
@@ -237,7 +237,7 @@ function launchJSPsych (fullscreen) {
     on_finish: function(trial_data) {
       correct = endTrial(trial_data);
       if (correct==1) {
-          snd.play()
+
           document.getElementById("nBackCanvas").innerHTML = "<DIV id='nBackFeedBack'>&#10004</DIV>";
           setTimeout(function() {document.getElementById("nBackCanvas").innerHTML= "";}, 300);
 
@@ -258,8 +258,8 @@ function launchJSPsych (fullscreen) {
   var practice_loop = {
       timeline: [practice_block_one, after_practice],
       loop_function: function(){
-          var data =  jsPsych.data.getLastTrialData()     
-          
+          var data =  jsPsych.data.getLastTrialData()
+
           if(data.button_pressed == 0){
               return true;
           } else {
@@ -279,11 +279,11 @@ function launchJSPsych (fullscreen) {
       correct = endTrial(trial_data);
 
       if (correct==0) {
-        jsPsych.data.addDataToLastTrial({answer: 0});  
+        jsPsych.data.addDataToLastTrial({answer: 0});
         mistakeCounter++; }
       else {
-        jsPsych.data.addDataToLastTrial({answer: 1});  
-        mistakeCounter= mistakeCounter; 
+        jsPsych.data.addDataToLastTrial({answer: 1});
+        mistakeCounter= mistakeCounter;
       }
     }
    };
@@ -303,7 +303,8 @@ function launchJSPsych (fullscreen) {
     on_finish: function(trial_data) {
       correct = endTrial(trial_data);
       if (correct==1) {
-          snd.play()
+        document.getElementById("nBackCanvas").innerHTML = "<DIV id='nBackFeedBack'>&#10004</DIV>";
+        setTimeout(function() {document.getElementById("nBackCanvas").innerHTML= "";}, 300);  
         }
 
       }
@@ -321,8 +322,8 @@ function launchJSPsych (fullscreen) {
   var practice_loop_two = {
       timeline: [practice_block_two, after_practice_two],
       loop_function: function(){
-          var data =  jsPsych.data.getLastTrialData()     
-          
+          var data =  jsPsych.data.getLastTrialData()
+
           if(data.button_pressed == 0){
               return true;
           } else {
@@ -342,11 +343,11 @@ function launchJSPsych (fullscreen) {
     on_finish: function(trial_data) {
       correct = endTrial(trial_data);
       if (correct==0) {
-        jsPsych.data.addDataToLastTrial({answer: 0});  
+        jsPsych.data.addDataToLastTrial({answer: 0});
         mistakeCounter++; }
       else {
-        jsPsych.data.addDataToLastTrial({answer: 1});  
-        mistakeCounter=mistakeCounter; 
+        jsPsych.data.addDataToLastTrial({answer: 1});
+        mistakeCounter=mistakeCounter;
       }
     }
    };
@@ -362,7 +363,7 @@ function launchJSPsych (fullscreen) {
           return true;
         }
       }
-          
+
   };
 
     jsPsych.init({
