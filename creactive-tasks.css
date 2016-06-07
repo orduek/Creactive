@@ -80,14 +80,14 @@
 .under {
     position: absolute;
     left: 100px;
-    top: 100px;
+    top: 400px;
     z-index: -1;
 }
 
 .over {
     position: absolute;
-    left: 100px;
-    top: 100px;
+    left: 150px;
+    top: -100px;
     z-index: -1;
 }
 

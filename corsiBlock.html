@@ -2,10 +2,12 @@
 <head>
     <title>CorsiBlock</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
- 	  <script src="jspsych-5.0.3/jspsych.js"></script>
+ 	<script src="jspsych-5.0.3/jspsych.js"></script>
   	<script src="jspsych-5.0.3/plugins/jspsych-call-function.js"></script>
     <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
+    <script src="jspsych-5.0.3/plugins/jspsych-button-response.js"></script>
     <script src="jspsych-5.0.3/plugins/plugin-corsi.js"></script>
+    
     <script src="GivitiExternalStorage/js/ExternalStorage.js"></script>
     <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     <link href="creactive-tasks.css" rel="stylesheet" type="text/css"></link>
@@ -52,18 +54,21 @@ var forward = [[2,9],[6,3],[0,8,2],[7,1,6],[3,8,0,5],[9,5,1,6],[5,4,0,3,7],[4,6,
 
 var backward = [[6,3],[2,9],[7,1,6],[0,8,2],[9,5,1,6],[3,8,0,5],[4,3,8,7,1],[5,4,0,3,7],[8,1,5,6,2,4],[3,0,8,2,7,9],[1,5,2,7,1,0,9],[9,0,5,3,7,4,6],[5,8,2,1,0,6,9,4],[6,2,9,4,6,7,3,8],[7,1,5,0,9,2,6,3,8],[4,7,3,9,6,2,0,8,5]];
 
+var forwardP = [[5,2],[7,3]];
+var backwardP = [[8,1],[2,6]];
+
 var wrongCount = 0;
 
 function createCorsiTimeline (arrayOfRectangles) {
-    var result = [];
-    for (var k = 0; k < arrayOfRectangles.length; k++) {
-        var stimulusObject = {
-            stimulus: arrayOfRectangles[k]
-        }
-        result.push(stimulusObject);
-    }
-    return result;
-}
+	var result = [];
+	for (var k = 0; k < arrayOfRectangles.length; k++) {
+   	 var stimulusObject = {
+   	     stimulus: arrayOfRectangles[k]
+   	 };
+   	 result.push(stimulusObject);
+	};
+	return result;
+};
 
 
 function launchJSPsych(fullscreen)  {
@@ -75,6 +80,7 @@ function launchJSPsych(fullscreen)  {
       cont_key: "mouse"
     };
 
+   
 
     var checkIfMaxNumberOfWrongs = function (data) {
         console.log("OnFinish");
@@ -84,7 +90,7 @@ function launchJSPsych(fullscreen)  {
             wrongCount = 0;
         }
         console.log("Wrong count: " + wrongCount);
-        if (wrongCount >= 3) {
+        if (wrongCount >= 2) {
             jsPsych.endCurrentTimeline();
             wrongCount = 0;
         }
@@ -110,6 +116,7 @@ function launchJSPsych(fullscreen)  {
         cont_key: "mouse"
       };
 
+
     var corsiNodeForward = {
         type: 'plugin-corsi',
         timeline: createCorsiTimeline(forward),
@@ -119,7 +126,7 @@ function launchJSPsych(fullscreen)  {
             direction:"forward"
         },
         on_finish: checkIfMaxNumberOfWrongs
-    }
+    };
 
     var corsiNodeBackward = {
         type: 'plugin-corsi',
@@ -130,10 +137,66 @@ function launchJSPsych(fullscreen)  {
             direction:"backward"
         },
         on_finish: checkIfMaxNumberOfWrongs
-    }
+    };
+
+   var forwardPractice = {
+		type: 'plugin-corsi',
+		timeline: createCorsiTimeline(forwardP),
+		timing_response: 7000,
+		direction: "forward",
+		data: {
+			block: "practice",
+			direction: "forward"
+			},
+		on_finish: checkIfMaxNumberOfWrongs
+	};
+
+	var backwardPractice = {
+		type: 'plugin-corsi',
+		timeline: createCorsiTimeline(backwardP),
+		timing_response: 7000,
+		direction: "backward",
+		data: {
+			block: "practice",
+			direction: "backward"
+			}
+		};
+	var after_practice = {
+	    type: 'button-response',
+	    stimulus: storage.getTranslation("endPractice"),
+	    choices: ['Repeat', 'Continue'],
+	    is_html: true,
+	    button_html: "<a class='jspsych-btn'>%choice%</a>"
+
+	  };
+	 var practice_loop_forward = {
+	    timeline: [forwardPractice, after_practice],
+	    loop_function: function(){
+	        var data =  jsPsych.data.getLastTrialData()
+
+	        if(data.button_pressed == 0){
+	            return true;
+	        } else {
+	            return false;
+	        }
+	    }
+	};
+
+	var practice_loop_backward = {
+	    timeline: [backwardPractice, after_practice],
+	    loop_function: function(){
+	        var data =  jsPsych.data.getLastTrialData()
+
+	        if(data.button_pressed == 0){
+	            return true;
+	        } else {
+	            return false;
+	        }
+	    }
+	}
 
     jsPsych.init({
-        timeline: [ instructions_block, corsiNodeForward, instructions, corsiNodeBackward ],
+        timeline: [ instructions_block, practice_loop_forward, corsiNodeForward, instructions, practice_loop_backward,  corsiNodeBackward],
         fullscreen: fullscreen,
         default_iti: 0,
         on_finish: function() {
