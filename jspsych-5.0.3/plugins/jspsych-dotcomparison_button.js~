@@ -334,7 +334,7 @@
 
 			 setTimeout(runTrial,1250);
 			 function ask() {
-			 	var askWhich = s.text(300,350, storage.getTranslation("questionMoreDots")/*"Which color has more dots? [f] Blue  [j] Yellow?"*/); askWhich.attr({
+			 	var askWhich = s.text(200,350, storage.getTranslation("questionMoreDots")/*"Which color has more dots? [f] Blue  [j] Yellow?"*/); askWhich.attr({
                     fill: "white",
                     'font-size': 20
                 });
