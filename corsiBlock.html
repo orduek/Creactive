@@ -7,7 +7,7 @@
     <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
     <script src="jspsych-5.0.3/plugins/jspsych-button-response.js"></script>
     <script src="jspsych-5.0.3/plugins/plugin-corsi.js"></script>
-    
+    <script src="jspsych-5.0.3/plugins/jspsych-single-stim-mouse.js"></script>
     <script src="GivitiExternalStorage/js/ExternalStorage.js"></script>
     <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     <link href="creactive-tasks.css" rel="stylesheet" type="text/css"></link>
@@ -195,12 +195,19 @@ function launchJSPsych(fullscreen)  {
 	    }
 	}
 
+    var thanks = {
+    type: 'single-stim-mouse',
+    stimulus: 'static/images/thanks.png', 
+    timing_stim: 5000,
+    timing_response: 5000
+     };
+    
     jsPsych.init({
-        timeline: [ instructions_block, practice_loop_forward, corsiNodeForward, instructions, practice_loop_backward,  corsiNodeBackward],
+        timeline: [ instructions_block, practice_loop_forward, corsiNodeForward, instructions, practice_loop_backward,  corsiNodeBackward, thanks],
         fullscreen: fullscreen,
         default_iti: 0,
         on_finish: function() {
-            jsPsych.data.displayData();
+           // jsPsych.data.displayData();
             storage.saveData(appName, jsPsych.data.getData());
         }
     });

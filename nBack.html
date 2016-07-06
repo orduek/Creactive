@@ -366,16 +366,28 @@ function launchJSPsych (fullscreen) {
 
   };
 
+  var thanks = {
+    type: 'single-stim-mouse',
+    stimulus: 'static/images/thanks.png', 
+    timing_stim: 5000,
+    timing_response: 5000
+    };
+
+  // preloading images
+  jsPsych.pluginAPI.preloadImages([test_stimuli], function(){ startExperiment(); });
+
+  function startExperiment() {
     jsPsych.init({
-          timeline: [inst_block,practice_loop, block_one, if_node],
+          timeline: [inst_block,practice_loop, block_one, if_node, thanks],
           show_progress_bar: true,
           fullscreen: fullscreen,
           default_iti: 500,
           on_finish: function() {
-              jsPsych.data.displayData();
+           //   jsPsych.data.displayData();
               storage.saveData(appName, jsPsych.data.getData());
           }
         });
+  };
 };
 </script>
 

@@ -203,7 +203,7 @@ var if_trial = {
               if (data.response=='fixation'){
                 return false;
             } else {
-              console.log(countingTrials);
+             // console.log(countingTrials);
               if (data.response=='go') { // do it only after go trials
                 if (countingTrials%ageCount===0) {
                 return true; };
@@ -296,20 +296,32 @@ var if_trial = {
 
 // insert if node
 
+   var thanks = {
+    type: 'single-stim-mouse',
+    stimulus: 'static/images/thanks.png', 
+    timing_stim: 5000,
+    timing_response: 5000
+     };
 
 
+     // preloading stimuli
 
+     var allStim = ['static/images/plate.png', 'static/images/redapple.png', 'static/images/manyApples.png', 'static/images/greenapple.jpg'];
 
+     jsPsych.pluginAPI.preloadImages(allStim, function(){ startExperiment(); });
+
+     function startExperiment() {
       jsPsych.init({
-        timeline: [instructions_block, practice_loop, block_one],
+        timeline: [instructions_block, practice_loop, block_one, thanks],
        // show_progress_bar: true,
         fullscreen: fullscreen,
         default_iti: 0,
         on_finish: function() {
-            jsPsych.data.displayData();
+        //    jsPsych.data.displayData();
             storage.saveData(appName, jsPsych.data.getData());
         }
       });
+    };
   };
 </script>
 

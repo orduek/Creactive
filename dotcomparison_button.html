@@ -28,6 +28,7 @@ DOT SIZE - base dot size is 36px. variance 20.
 	<title>Dot Comparison Task</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="jspsych-5.0.3/jspsych.js"></script>
+    <script src="jspsych-5.0.3/plugins/jspsych-single-stim-mouse.js"></script>
     <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
  	<script src="snap.svg-min.js"></script>
     <script src="GivitiExternalStorage/js/ExternalStorage.js"></script>
@@ -153,9 +154,15 @@ function launchJSPsych(fullscreen) {
 				cont_key: "mouse"
       };
 
+       var thanks = {
+        type: 'single-stim-mouse',
+        stimulus: 'static/images/thanks.png', 
+        timing_stim: 5000,
+        timing_response: 5000
+         };
 
       jsPsych.init({
-            timeline: [ instructions_block, block_forward],
+            timeline: [ instructions_block, block_forward, thanks],
             fullscreen: fullscreen,
             on_finish: function() {
                 jsPsych.data.displayData();

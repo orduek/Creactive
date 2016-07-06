@@ -594,16 +594,32 @@ function launchJSPsych (fullscreen) {
     }
   };
 
+  var thanks = {
+    type: 'single-stim-mouse',
+    stimulus: 'static/images/thanks.png', 
+    timing_stim: 5000,
+    timing_response: 5000
+  };
+   
+
+   // preloading images 
+   
+   jsPsych.pluginAPI.preloadImages([block_one,block_two,block_three], function(){ startExperiment(); });
+
+
+  function startExperiment () {
    jsPsych.init({
-          timeline: [presentationBlock, presentation_stage,practiceBlock,practice_stage,instructionsFirstBlock,first_stage,between_stageOneTwo,second_stage,between_stageTwoThree,third_stage],//, instructionsFirstBlock, practice_stage, first_stage, between_stageOneTwo, second_stage, between_stageTwoThree, third_stage],
+          timeline: [presentationBlock, presentation_stage,practiceBlock,practice_stage,instructionsFirstBlock,first_stage,between_stageOneTwo,second_stage,between_stageTwoThree,third_stage, thanks],//, instructionsFirstBlock, practice_stage, first_stage, between_stageOneTwo, second_stage, between_stageTwoThree, third_stage],
           //show_progress_bar: true,
           fullscreen: fullscreen,
           default_iti: 0,
           on_finish: function() {
-              jsPsych.data.displayData();
+              //jsPsych.data.displayData();
               storage.saveData(appName, jsPsych.data.getData());
           }
         });
+  };
+ 
 };
 </script>
 </body>
