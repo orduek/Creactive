@@ -22,43 +22,62 @@ block -->
 
 </body>
 <script>
-var appName = "CREACTIVEAmbulatoryTasksNback";
-    var translationServiceURL = "https://givitiweb.marionegri.it/translations/Services/TranslationWebService.svc/";
-    var dataStorageServiceURL = "http://episerver/givitiweb/Services/DataStorageWebService.svc/";
-    var storage = new it.marionegri.givitiweb.ExternalStorage(translationServiceURL, dataStorageServiceURL);
 
+    var appName = "CREACTIVEAmbulatoryTasksNback";
+    var storage = null;
+
+    function loadConfigs(){
+        var promise = $.getJSON("conf.json");
+        promise.done(function (data) {
+            console.log("Config loaded!");
+            storage = new it.marionegri.givitiweb.ExternalStorage(data.translationServiceURL, data.dataStorageServiceURL);
+        });
+        promise.fail(function (error) { 
+            console.log(error);
+        });
+        return promise;
+    }
+    
     function loadTranslations (culture) {
         var promise = storage.loadTranslations("N Back Task", culture)
-        promise.then(
-            function () {
-                console.log("Translations loaded!");
-                if (Object.getOwnPropertyNames(jsPsych.currentTrial()).length > 0) {
-                    jsPsych.endExperiment("Test");
-                    jsPsych.endCurrentTimeline();
-                    launchJSPsych(false);
-                } else {
-                    launchJSPsych(true);
-                }
+        promise.done(function () {
+            console.log("Translations loaded!");
+            if (Object.getOwnPropertyNames(jsPsych.currentTrial()).length > 0) {
+                jsPsych.endExperiment("Test");
+                jsPsych.endCurrentTimeline();
+                launchJSPsych(false);
+            } else {
+                launchJSPsych(true);
             }
-        );
-    }
-    var languages = it.marionegri.givitiweb.PageUtils.getListOfLanguages();
-    if (languages == null || languages.length == 0) {
-        loadTranslations("en-US");
-    } else {
-        loadTranslations(languages[0]);
+        });
+        promise.fail(function (error) { 
+            console.log(error);
+        });
+        return promise;
     }
 
+    var languages = it.marionegri.givitiweb.PageUtils.getListOfLanguages();
+    loadConfigs()
+        .done(function() {
+          if (languages == null || languages.length == 0) {
+              loadTranslations("en-US");
+          } else {
+              loadTranslations(languages[0]);
+          }
+    });
+    
     function onChangeLanguage(sel) {
         loadTranslations(sel.value);
     }
 
-  /* define welcome message block */
-  //age = prompt("What age are you?");
-  var age = it.marionegri.givitiweb.PageUtils.getAge();
-  if (age == null) {
-    age = prompt("What age are you?");
-  }
+    /* define welcome message block */
+    //age = prompt("What age are you?");
+    var age = it.marionegri.givitiweb.PageUtils.getAge();
+    if (age == null) {
+      age = prompt("What age are you?");
+    }
+    
+    
 function launchJSPsych (fullscreen) {
   // Create 10 stimulus objects (animal pictures).
   // creating var for each picture, if we want to change something in future.
