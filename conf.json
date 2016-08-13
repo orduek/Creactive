@@ -1,4 +1,4 @@
 {
-  "translationServiceURL" : "INSERT TRANSLATIONS SERVICE URL",
-  "dataStorageServiceURL" : "INSERT DATA STORAGE SERVICE URL"
+  "translationServiceURL" : "https://givitiweb.marionegri.it/translations/Services/TranslationWebService.svc/",
+  "dataStorageServiceURL" : "https://givitiweb.marionegri.it/Services/DataStorageWebService.svc/"
 }

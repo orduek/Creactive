@@ -33,7 +33,7 @@
 			// this array holds handlers from setTimeout calls
 			// that need to be cleared if the trial ends early
 			var setTimeoutHandlers = [];
-
+			var rt; // setting rt variable to save reation time
 			if (trial.ratio == '1:2') {
 				console.log('1:2');
 				// set amount of dots per color
@@ -202,6 +202,7 @@
 
 			// setting answer variable to compare for correct or incorrect
 			var answer;
+			var start_time; // adding a variable to as a start time of experiment
 			function runTrial() {
 			//	document.removeEventListener('keydown',runTrial());
 				console.log("RunTrial");
@@ -328,7 +329,7 @@
                 },500);
 
                 // should add mask here.
-
+                start_time = (new Date()).getTime();  // start measuring time elapsed until response
 
 			}
 
@@ -357,11 +358,13 @@
 								var btn2 = s.group(block2);
 								btn1.click( function( ev  ) {
 								    btn1.attr({ opacity: 0.5 });
+										rt = (new Date()).getTime() - start_time - 1250; //delay of runTrial
 										var response = 70;
 										after_response(response);
 								    });
 								btn2.click( function( ev  ) {
 								    btn2.attr({ opacity: 0.5 });
+										rt = (new Date()).getTime() - start_time - 1250; //delay of runTrial
 										var response = 74;
 										after_response(response);
 								    });
@@ -392,7 +395,7 @@
 					}
 					// gather the data to store for the trial
 					var trial_data = {
-						"rt": response.rt,  // adding minux delay (should be 2500 or something like it). Same delay as ask()
+						"rt": rt,  // adding minux delay (should be 2500 or something like it). Same delay as ask()
 						"lessDot": lessDot,
 						"moreDot": moreDot,
 						"actualRatio": actualRatio,
