@@ -1,0 +1,4 @@
+{
+  "translationServiceURL" : "https://givitiweb.marionegri.it/translations/Services/TranslationWebService.svc/",
+  "dataStorageServiceURL" : "https://givitiweb.marionegri.it/Services/DataStorageWebService.svc/"
+}
