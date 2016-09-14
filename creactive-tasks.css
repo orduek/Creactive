@@ -42,8 +42,8 @@
 
 #goNoGoFixationPoint {
     position: absolute;
-    top:80px;
-    left:400px;
+    top:60px;
+    left:390px;
     width:200px;
     height:25px;
     font-size: 3em;
@@ -151,6 +151,15 @@
     position: absolute;
     top:300px;
     left:400px;
+    width:200px;
+    height:25px;
+    font-size: 3em;
+}
+
+#antCenter {
+    position: absolute;
+    top:200px;
+    left:200px;
     width:200px;
     height:25px;
     font-size: 3em;

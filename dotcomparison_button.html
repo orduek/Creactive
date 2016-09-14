@@ -27,9 +27,9 @@ DOT SIZE - base dot size is 36px. variance 20.
 <head>
 	<title>Dot Comparison Task</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="jspsych-5.0.3/jspsych.js"></script>
-    <script src="jspsych-5.0.3/plugins/jspsych-single-stim-mouse.js"></script>
-    <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
+   <script src="jspsych-5.0.3/jspsych.js"></script>
+  <script src="jspsych-5.0.3/plugins/jspsych-single-stim-mouse.js"></script>
+  <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
  	<script src="snap.svg-min.js"></script>
     <script src="GivitiExternalStorage/js/ExternalStorage.js"></script>
 
@@ -37,7 +37,7 @@ DOT SIZE - base dot size is 36px. variance 20.
 
   	<script src="jspsych-5.0.3/plugins/jspsych-call-function.js"></script>
     <script src="jspsych-5.0.3/plugins/jspsych-dotcomparison_button.js"></script>
-
+ <script src="jspsych-5.0.3/plugins/jspsych-button-response.js"></script>
     <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     <link href="creactive-tasks.css" rel="stylesheet" type="text/css"></link>
 </head>
@@ -140,8 +140,48 @@ function launchJSPsych(fullscreen) {
         }
         stimuli.push(stimulusObject)
     }
-
+  
+    var practice_array = [
+     { ratio: '1:2',
+      condition: 'area' },
+      { ratio: '3:4',
+      condition: "average"},
+      {
+      ratio: '1:2',
+      condition: 'area'
+      }
+    ];
     shuffle(stimuli);
+    var practice = {
+      // a practice block
+      type: 'dotComparison-button',
+      timeline: practice_array,
+      choices: [70,74]
+
+      };
+    var after_practice = {
+      type: 'button-response',
+      stimulus: storage.getTranslation("afterPractice"),
+      choices: ['Repeat', 'Continue'],
+      is_html: true,
+      button_html: "<a class='jspsych-btn'>%choice%</a>"
+
+    };
+
+    var practice_loop = {
+      timeline: [practice, after_practice],
+      loop_function: function(){
+          var data =  jsPsych.data.getLastTrialData()     
+          
+          if(data.button_pressed == 0){
+              return true;
+          }
+          else {
+              return false;
+          }
+      }
+
+    };
 
     var block_forward = {
           type: 'dotComparison-button',
@@ -179,7 +219,7 @@ function launchJSPsych(fullscreen) {
          };
 
       jsPsych.init({
-            timeline: [ instructions_block, block_forward, thanks],
+            timeline: [ instructions_block, practice_loop, block_forward, thanks],
             fullscreen: fullscreen,
             on_finish: function() {
                 jsPsych.data.displayData();

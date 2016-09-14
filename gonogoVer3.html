@@ -89,26 +89,45 @@
       var stimExp = 0;
       var maxTime= 0;
       var ageCount = 0; // set how many trials to feedback
-      if (age == 0) {
-        stimExp = 1000;
-        maxTime = 1000;
-        ageCount = 5;
 
-      } else if (age > 0 && age < 5) {
-        stimExp = 2000;
-        maxTime = 2000;
-        ageCount = 5;
+    var post_trial_gap = function() { // should uise if to fixation length or timing_Response. 
+  		return Math.floor((Math.random() * 300) + 100); 
+		}
 
-      } else if (age >= 5 && age <= 10) {
-        stimExp = 1000;
-        maxTime = 1000;
-        ageCount = 5;
+	  if (age == 0) {
+	stimExp = 1000;
+	maxTime = 1000;
+	ageCount = 5;
 
-      } else if (age > 10) {
-        stimExp = 500;
-        maxTime = 1000;
-        ageCount = 10;
-      }
+	} else if (age > 0 && age <= 3) {
+	stimExp = 2000;
+	maxTime = 2000;
+	ageCount = 5;
+	feedBack = "<div class='under'><img src='static/images/plate.png'></img><div class='over'><img src='static/images/redapple.png'></img>";
+	feedBack_duration = 200;
+	} else if (age >3  && age <= 7) {
+	stimExp = 1000;
+	maxTime = 1000;
+	ageCount = 5;
+	feedBack_duration = 200;
+	feedBack = "<div class='under'><img src='static/images/plate.png'></img><div class='over'><img src='static/images/redapple.png'></img>";
+	}
+
+	else if (age > 7 && age <= 10) {
+	stimExp = 500;
+	maxTime = post_trial_gap;
+	ageCount = 200;
+	feedBack_duration = 10;
+	feedBack = "";
+
+	} else if (age > 10) {
+	stimExp = 300;
+	maxTime = post_trial_gap;
+	ageCount = 200;
+	feedBack_duration = 10;
+	feedBack = "";
+	}
+
 
       var languages = it.marionegri.givitiweb.PageUtils.getListOfLanguages();
       var languageSelect = "<select onchange='onChangeLanguage(this)'>";
@@ -145,12 +164,16 @@
          data: {response: "go"},
          key_answer: "mouse",
          usemouse: true,
+         timing_stim: stimExp
+        // timing_response: maxTime
 
          },
          {
           stimulus: 'static/images/greenapple.jpg',
           data: {response: "NoGo"},
           usemouse: true,
+          timing_stim: stimExp
+          //timing_response: maxTime
 
          }
          ];
@@ -175,8 +198,8 @@
         {
           stimulus: '<DIV id="goNoGoFixationPoint">+</DIV>',
           is_html: true,
-          timing_stim: 200,
-          timing_response: 200,
+          timing_stim: post_trial_gap(),
+          timing_response: post_trial_gap(),
           data: {response: "fixation"}
         }, practice_trials[i]
 
@@ -184,21 +207,14 @@
     };
 
 
-// if trial_data
+// 
 
-var if_trial = {
-    type: 'single-stim-mouse',
-    stimulus: "<div id='goNoGoFeedBack'><img src='static/images/manyApples.png'></img>",
-    is_html: true,
-    timing_stim: 500,
-    response_ends_trial: false
-}
-////
+
 
   // adding option to use short RT (100ms) as bad feedback
   var trial_data = jsPsych.data.getLastTrialData();
   var snd = new Audio("static/audio/buzzer.mp3"); // an audio file with woohooo sound
-  var countingTrials = 0;  //counting trials to put feedback every 5/10 trials.
+  var countingTrials = 0;  //counting trials to put feedback every 5/10 trials. DEPRICATED
 
 
     var blockOneTimeline = [];
@@ -207,46 +223,24 @@ var if_trial = {
         {
           stimulus: '<DIV id="goNoGoFixationPoint">+</DIV>',
           is_html: true,
-          timing_stim: 200,
-          timing_response: 200,
+          timing_stim: post_trial_gap(),
+          timing_response: post_trial_gap(),
           data: {response: "fixation"}
-        }, all_trials[i],
-        {
-          timeline: [if_trial],
-          conditional_function: function(){
-            var data = jsPsych.data.getLastTrialData();
-            // create an if sequence that checks if a key was pressed, then if it was under fixation point or actuall stimulus. Then if is was a "go" trial. If it was all that (key_pressed, go trial, correct answer) then check if it was number 5 or not. If so, show basket with apples. If not - move to next trial.
-            if (data.key_press!=-1) {
-              if (data.response=='fixation'){
-                return false;
-            } else {
-             // console.log(countingTrials);
-              if (data.response=='go') { // do it only after go trials
-                if (countingTrials%ageCount===0) {
-                return true; };
-              } else {
-                return false;
-              };
-                  return false;
-                };
-              };
-            },
-
-
-        }
-
+        }, all_trials[i]
+        
         );
     };
+    
     var practice_block_one = {
       type: "categorize-mouse",
           timeline: practiceBlockTimeline,
-          timing_feedback_duration: 300,
-          correct_text: "<div class='under'><img src='static/images/plate.png'></img><div class='over'><img src='static/images/redapple.png'></img>",
+          timing_feedback_duration: feedBack_duration,
+          correct_text: feedBack,
           show_stim_with_feedback: false,
           incorrect_text: " ",
           timeout_message: " ",
           timing_stim: stimExp,
-          timing_response: maxTime,
+          timing_response: 1500,
           on_finish: function(trial_data) {
             if (trial_data.response=='fixation'){
 
@@ -262,13 +256,13 @@ var if_trial = {
     var block_one = {
           type: "categorize-mouse",
           timeline: blockOneTimeline ,
-          timing_feedback_duration: 300,
-          correct_text: "<div class='under'><img src='static/images/plate.png'></img><div class='over'><img src='static/images/redapple.png'></img>",
+          timing_feedback_duration: feedBack_duration,
+          correct_text: feedBack,
           show_stim_with_feedback: false,
           incorrect_text: " ",
           timeout_message: " ",
           timing_stim: stimExp,
-          timing_response: maxTime,
+          timing_response: 1500,
           on_finish: function(trial_data) {
             if (trial_data.response=='fixation'){
 
