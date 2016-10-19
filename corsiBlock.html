@@ -137,6 +137,7 @@ function launchJSPsych(fullscreen)  {
         timing_response: 7000,
         direction:"forward",
         data: {
+        	block: "experiment",
             direction:"forward"
         },
         on_finish: checkIfMaxNumberOfWrongs
@@ -148,6 +149,7 @@ function launchJSPsych(fullscreen)  {
         timing_response: 7000,
         direction:"backward",
         data: {
+        	block: "experiment", 
             direction:"backward"
         },
         on_finish: checkIfMaxNumberOfWrongs

@@ -239,6 +239,7 @@
           show_stim_with_feedback: false,
           incorrect_text: " ",
           timeout_message: " ",
+          data: {block: "practice"},
           timing_stim: stimExp,
           timing_response: 1500,
           on_finish: function(trial_data) {
@@ -261,6 +262,7 @@
           show_stim_with_feedback: false,
           incorrect_text: " ",
           timeout_message: " ",
+          data: {block: "blockOne"},
           timing_stim: stimExp,
           timing_response: 1500,
           on_finish: function(trial_data) {
@@ -270,12 +272,22 @@
               if (trial_data.response=='go') {
                 if (trial_data.correct) {
                   countingTrials++;
+                  trial_data.answer = 1;
                 } else {
                   countingTrials=countingTrials;
+                  trial_data.answer = 0;
                 }
-              } else {
-                countingTrials=countingTrials;
-              }
+              }             
+              else if (trial_data.response=="NoGo") {
+                if (trial_data.key_press=="mouse") {
+                  trial_data.answer = 0;
+                  countingTrials=countingTrials;
+                } else {
+                  trial_data.answer = 1
+                  countingTrials=countingTrials;
+                };
+              } 
+              
             }
          }
 

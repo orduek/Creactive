@@ -156,6 +156,7 @@ function launchJSPsych(fullscreen) {
       // a practice block
       type: 'dotComparison-button',
       timeline: practice_array,
+      data: {block: "practice"},
       choices: [70,74]
 
       };
@@ -186,6 +187,7 @@ function launchJSPsych(fullscreen) {
     var block_forward = {
           type: 'dotComparison-button',
           timeline: stimuli,
+          data: {block: "blockOne"},
           choices: [70,74]
           //timing_response: 7000,
 
