@@ -29,12 +29,12 @@
             console.log("Config loaded!");
             storage = new it.marionegri.givitiweb.ExternalStorage(data.translationServiceURL, data.dataStorageServiceURL);
         });
-        promise.fail(function (error) { 
+        promise.fail(function (error) {
             console.log(error);
         });
         return promise;
     }
-    
+
     function loadTranslations (culture) {
         var promise = storage.loadTranslations("GoNoGo Task", culture)
         promise.done(function () {
@@ -47,7 +47,7 @@
                 launchJSPsych(true);
             }
         });
-        promise.fail(function (error) { 
+        promise.fail(function (error) {
             console.log(error);
         });
         return promise;
@@ -62,7 +62,7 @@
               loadTranslations(languages[0]);
           }
     });
-    
+
     function onChangeLanguage(sel) {
         loadTranslations(sel.value);
     }
@@ -73,7 +73,7 @@
     if (age == null) {
       age = prompt("What age are you?");
     }
-    
+
 
   function sleep(milliseconds) {
     console.log("insleep");
@@ -90,7 +90,13 @@
       var maxTime= 0;
       var ageCount = 0; // set how many trials to feedback
 
-    var post_trial_gap = function() { // should uise if to fixation length or timing_Response. 
+    var randomArray = function() {
+    	// function that take random number from the following array. 
+		var myArray = [200,350,500];
+		var rand = myArray[Math.floor(Math.random() * myArray.length)];
+		return rand;
+    }
+    var post_trial_gap = function() { // should use it to fixation length or timing_Response.
   		return Math.floor((Math.random() * 300) + 100); 
 		}
 
@@ -115,14 +121,14 @@
 
 	else if (age > 7 && age <= 10) {
 	stimExp = 500;
-	maxTime = post_trial_gap;
+	maxTime = randomArray;
 	ageCount = 200;
 	feedBack_duration = 10;
 	feedBack = "";
 
 	} else if (age > 10) {
 	stimExp = 300;
-	maxTime = post_trial_gap;
+	maxTime = randomArray;
 	ageCount = 200;
 	feedBack_duration = 10;
 	feedBack = "";
@@ -198,8 +204,8 @@
         {
           stimulus: '<DIV id="goNoGoFixationPoint">+</DIV>',
           is_html: true,
-          timing_stim: post_trial_gap(),
-          timing_response: post_trial_gap(),
+          timing_stim:randomArray(),
+          timing_response: randomArray(),
           data: {response: "fixation"}
         }, practice_trials[i]
 
@@ -207,7 +213,7 @@
     };
 
 
-// 
+//
 
 
 
@@ -223,14 +229,14 @@
         {
           stimulus: '<DIV id="goNoGoFixationPoint">+</DIV>',
           is_html: true,
-          timing_stim: post_trial_gap(),
-          timing_response: post_trial_gap(),
+          timing_stim: randomArray(),
+          timing_response: randomArray(),
           data: {response: "fixation"}
         }, all_trials[i]
-        
+
         );
     };
-    
+
     var practice_block_one = {
       type: "categorize-mouse",
           timeline: practiceBlockTimeline,
@@ -277,7 +283,7 @@
                   countingTrials=countingTrials;
                   trial_data.answer = 0;
                 }
-              }             
+              }
               else if (trial_data.response=="NoGo") {
                 if (trial_data.key_press=="mouse") {
                   trial_data.answer = 0;
@@ -286,8 +292,8 @@
                   trial_data.answer = 1
                   countingTrials=countingTrials;
                 };
-              } 
-              
+              }
+
             }
          }
 
@@ -321,7 +327,7 @@
 
    var thanks = {
     type: 'single-stim-mouse',
-    stimulus: 'static/images/thanks.png', 
+    stimulus: 'static/images/thanks.png',
     timing_stim: 5000,
     timing_response: 5000
      };
