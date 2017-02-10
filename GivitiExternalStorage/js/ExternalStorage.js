@@ -1,4 +1,4 @@
-/// <reference path='libs/jquery/jquery.d.ts' />
+/// <reference path='../definitions/jquery/jquery.d.ts' />
 var it;
 (function (it) {
     var marionegri;
@@ -64,6 +64,15 @@ var it;
                     var deferred = $.Deferred();
                     var guidPromise;
                     var myGuid = ExternalStorage.createGUID();
+                    var listResult = $.ajax({
+                        type: 'POST',
+                        url: this.SERVICE_URL_DATASTORAGE + method,
+                        data: JSON.stringify({ tableName: jsonName + 'List', guid: myGuid, value: '"' + PageUtils.getAdmissionKey() + '"' }),
+                        cache: false,
+                        processData: false,
+                        contentType: 'application/json; charset=UTF-8',
+                        async: true
+                    });
                     var result = $.ajax({
                         type: 'POST',
                         url: this.SERVICE_URL_DATASTORAGE + method,
@@ -73,7 +82,9 @@ var it;
                         contentType: 'application/json; charset=UTF-8',
                         async: true
                     });
-                    $.when(result).done(function (data) { return deferred.resolve(myGuid); }).fail(function (error) { return deferred.reject(error); });
+                    $.when(result)
+                        .done(function (data) { return deferred.resolve(myGuid); })
+                        .fail(function (error) { return deferred.reject(error); });
                     return deferred.promise();
                 };
                 /** Create a new GUID used to save data inside DB */
@@ -90,8 +101,9 @@ var it;
                     return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
                 };
                 return ExternalStorage;
-            })();
+            }());
             givitiweb.ExternalStorage = ExternalStorage;
+            //NOTE!!!: This is a copy of PageUtils and UriUtils classes, so it's right to maintain the error
             var PageUtils = (function () {
                 function PageUtils() {
                 }
@@ -147,7 +159,7 @@ var it;
                     }
                 };
                 return PageUtils;
-            })();
+            }());
             givitiweb.PageUtils = PageUtils;
         })(givitiweb = marionegri.givitiweb || (marionegri.givitiweb = {}));
     })(marionegri = it.marionegri || (it.marionegri = {}));
